@@ -25,9 +25,6 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: Prepare for building
-        run: bash ../mtk-openwrt-feeds/autobuild/unified/autobuild.sh filogic-mac80211-bpi-r4 prepare log_file=make
-
       - name: Set no jevents
         run: export NO_JEVENTS=1
 
