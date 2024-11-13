@@ -85,7 +85,7 @@ ifneq ($(CONFIG_DRIVER_11BE_SUPPORT),)
 endif
 
 CORE_DEPENDS = +ucode +libubus +libucode +ucode-mod-fs +ucode-mod-nl80211 +ucode-mod-rtnl +ucode-mod-ubus +ucode-mod-uloop +libblobmsg-json +libudebug
-OPENSSL_DEPENDS = +PACKAGE_$(1):libopenssl +PACKAGE_$(1):libopenssl-legacy
+OPENSSL_DEPENDS = +PACKAGE_$(1):libopenssl
 
 DRIVER_MAKEOPTS= \
 	CONFIG_ACS=y CONFIG_DRIVER_NL80211=y \
@@ -722,6 +722,9 @@ define Package/hostapd-common/install
 	$(INSTALL_BIN) ./files/wps-hotplug.sh $(1)/etc/rc.button/wps
 	$(INSTALL_DATA) ./files/wpad_acl.json $(1)/usr/share/acl.d
 	$(INSTALL_DATA) ./files/wpad.json $(1)/etc/capabilities
+	[ ! -d $(STAGING_DIR)/usr/include/wpa_ctrl.h ] && $(CP) -f $(PKG_BUILD_DIR)/src/common/wpa_ctrl.h $(STAGING_DIR)/usr/include
+	[ ! -d $(STAGING_DIR)/usr/lib/wpa_ctrl.o ] && $(CP) -f $(PKG_BUILD_DIR)/build/hostapd/src/common/wpa_ctrl.o $(STAGING_DIR)/usr/lib
+	[ ! -d $(STAGING_DIR)/usr/lib/os_unix.o ] && $(CP) -f $(PKG_BUILD_DIR)/build/hostapd/src/utils/os_unix.o $(STAGING_DIR)/usr/lib
 endef
 
 define Package/hostapd/install

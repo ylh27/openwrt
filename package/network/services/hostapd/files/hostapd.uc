@@ -86,6 +86,7 @@ start_disabled=1
 function iface_freq_info(iface, config, params)
 {
 	let freq = params.frequency;
+	let bw320_offset = params.bw320_offset;
 	if (!freq)
 		return null;
 
@@ -94,25 +95,29 @@ function iface_freq_info(iface, config, params)
 		sec_offset = 0;
 
 	let width = 0;
-	for (let line in config.radio.data) {
-		if (!sec_offset && match(line, /^ht_capab=.*HT40/)) {
-			sec_offset = null; // auto-detect
-			continue;
+	if (params.ch_width >= 0){
+		width = params.ch_width;
+	} else {
+		for (let line in config.radio.data) {
+			if (!sec_offset && match(line, /^ht_capab=.*HT40/)) {
+				sec_offset = null; // auto-detect
+				continue;
+			}
+
+			let val = match(line, /^(vht_oper_chwidth|he_oper_chwidth|eht_oper_chwidth)=(\d+)/);
+			if (!val)
+				continue;
+
+			val = int(val[2]);
+			if (val > width)
+				width = val;
 		}
-
-		let val = match(line, /^(vht_oper_chwidth|he_oper_chwidth)=(\d+)/);
-		if (!val)
-			continue;
-
-		val = int(val[2]);
-		if (val > width)
-			width = val;
 	}
 
 	if (freq < 4000)
 		width = 0;
 
-	return hostapd.freq_info(freq, sec_offset, width);
+	return hostapd.freq_info(freq, sec_offset, width, bw320_offset);
 }
 
 function iface_add(phy, config, phy_status)
@@ -841,6 +846,8 @@ let main_obj = {
 			up: true,
 			frequency: 0,
 			sec_chan_offset: 0,
+			ch_width: -1,
+			bw320_offset: 1,
 			csa: true,
 			csa_count: 0,
 		},
@@ -848,6 +855,15 @@ let main_obj = {
 			let phy = phy_name(req.args.phy, req.args.radio);
 			if (req.args.up == null || !phy)
 				return libubus.STATUS_INVALID_ARGUMENT;
+
+			hostapd.printf(`ucode: mtk: apsta state update`);
+			hostapd.printf(`    * phy: ${req.args.phy}`);
+			hostapd.printf(`    * up: ${req.args.up}`);
+			hostapd.printf(`    * freqeuncy: ${req.args.frequency}`);
+			hostapd.printf(`    * sec_chan_offset: ${req.args.sec_chan_offset}`);
+			hostapd.printf(`    * ch_width: ${req.args.ch_width}`);
+			hostapd.printf(`    * bw320_offset: ${req.args.bw320_offset}`);
+			hostapd.printf(`    * csa: ${req.args.csa}`);
 
 			let config = hostapd.data.config[phy];
 			if (!config || !config.bss || !config.bss[0] || !config.bss[0].ifname)

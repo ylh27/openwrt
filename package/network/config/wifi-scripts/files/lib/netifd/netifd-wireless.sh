@@ -68,6 +68,7 @@ _wdev_prepare_channel() {
 		;;
 	esac
 
+	band=$(echo "$band" | sed 's/G/g/')
 	case "$band" in
 		2g) hwmode=g;;
 		5g|6g) hwmode=a;;
