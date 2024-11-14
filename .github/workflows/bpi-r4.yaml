@@ -29,25 +29,13 @@ jobs:
         run: export NO_JEVENTS=1
 
       - name: Set config
-        run: |
-          cp .ab/filogic-mac80211-bpi-r4.config .config
+        run: cp .ab/filogic-mac80211-bpi-r4.config .config
 
       - name: Build
         run: make -j$(nproc) download world
-
-      - name: Check fs
-        run: |
-          ls -al
-          ls bin -al
-          ls bin/targets -al
-          ls bin/targets/mediatek -al
-          ls bin/targets/mediatek/filogic -al
-      
-      - name: Tar output
-        run: tar -czvf BPI-R4-openwrt-24.10.tar bin/targets/mediatek/filogic
 
       - name: Save build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: BPI-R4-openwrt-24.10
-          path: BPI-R4-openwrt-24.10.tar
+          path: bin/targets/mediatek/filogic
