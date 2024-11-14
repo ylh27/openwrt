@@ -31,11 +31,23 @@ jobs:
       - name: Make defconfig
         run: make defconfig
 
+      - name: Check fs
+        run: |
+          ls -al
+
       - name: Build
         run: make -j$(nproc) download world
 
+      - name: Check fs
+        run: |
+          ls -al
+          ls bin -al
+          ls bin/targets -al
+          ls bin/targets/mediatek -al
+          ls bin/targets/mediatek/filogic -al
+      
       - name: Tar output
-        run: tar -cvf BPI-R4-openwrt-24.10.tar bin/targets/mediatek/filogic
+        run: tar -czvf BPI-R4-openwrt-24.10.tar bin/targets/mediatek/filogic
 
       - name: Save build artifacts
         uses: actions/upload-artifact@v4
