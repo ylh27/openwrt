@@ -35,7 +35,7 @@ jobs:
         run: make -j$(nproc) download world
 
       - name: Tar output
-        run: tar -czvf BPI-R4-openwrt-24.10.tar bin/targets/mediatek/filogic
+        run: tar -cvf BPI-R4-openwrt-24.10.tar bin/targets/mediatek/filogic
 
       - name: Save build artifacts
         uses: actions/upload-artifact@v4
