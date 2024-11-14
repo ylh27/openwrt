@@ -34,6 +34,7 @@ define Device/Default
 endef
 
 include $(SUBTARGET).mk
+-include $(SUBTARGET)-extra.mk
 
 define Image/Build
 	$(call Image/Build/$(1),$(1))
